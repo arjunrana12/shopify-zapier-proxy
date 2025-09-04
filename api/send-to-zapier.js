@@ -13,7 +13,7 @@ export default async function handler(req, res) {
   console.log('📩 Incoming email share request:', { email, product });
 
   // Example: Forward to a Zapier webhook (optional)
-  const zapierWebhookURL = 'https://hooks.zapier.com/hooks/catch/24465525/uh7f1wi/'; // Replace with your Zapier URL
+  const zapierWebhookURL = 'https://hooks.zapier.com/hooks/catch/24465525/ud3um2n/'; // Replace with your Zapier URL
 
   try {
     const zapierRes = await fetch(zapierWebhookURL, {
