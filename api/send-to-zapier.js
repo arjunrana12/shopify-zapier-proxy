@@ -27,7 +27,7 @@ export default async function handler(req, res) {
       .json({ error: 'Missing required fields' });
   }
 
-  try {
+  try {                       
     const zapierWebhookURL = 'https://hooks.zapier.com/hooks/catch/24465525/ud3um2n/';
 
     const zapierRes = await fetch(zapierWebhookURL, {
