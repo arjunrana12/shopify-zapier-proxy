@@ -23,7 +23,7 @@ export default async function handler(req, res) {
 
   try {
     // Optionally forward to Zapier
-    const zapierWebhookURL = 'https://hooks.zapier.com/hooks/catch/XXXXXXX/YYYYYYY';
+    const zapierWebhookURL = 'https://hooks.zapier.com/hooks/catch/24465525/ud3um2n/';
 
     const zapierRes = await fetch(zapierWebhookURL, {
       method: 'POST',
