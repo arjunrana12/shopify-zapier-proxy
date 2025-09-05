@@ -19,34 +19,41 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Missing required fields (email, product)" });
     }
 
-    // ✅ Create a nice HTML design for product details
+    // ✅ Styled product HTML design
     const productHTML = `
-      <h2 style="color:#333;">🛍️ Product Details</h2>
-      <table border="1" cellspacing="0" cellpadding="8" 
-             style="border-collapse:collapse; width:100%; max-width:500px;">
-        <tr>
-          <th align="left">Name</th>
-          <td>${product.title || "N/A"}</td>
-        </tr>
-        <tr>
-          <th align="left">Price</th>
-          <td>$${product.price || "0.00"}</td>
-        </tr>
-        <tr>
-          <th align="left">Quantity</th>
-          <td>${product.quantity || 1}</td>
-        </tr>
-        ${
-          product.image
-            ? `<tr>
-                <th align="left">Image</th>
-                <td>
-                  <img src="${product.image}" alt="${product.title}" width="120" />
-                </td>
-              </tr>`
-            : ""
-        }
-      </table>
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 8px;">
+        <h1 style="color: #2c3e50; text-align: center;">🛍️ New Product Interest</h1>
+        <p style="font-size: 16px; color: #555; text-align: center;">
+          A customer has shown interest in the following product:
+        </p>
+        
+        <div style="text-align: center; margin: 20px 0;">
+          ${
+            product.image
+              ? `<img src="${product.image}" alt="${product.title}" style="max-width: 200px; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);" />`
+              : ""
+          }
+        </div>
+
+        <table style="width: 100%; border-collapse: collapse; margin-top: 15px;">
+          <tr>
+            <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Title</td>
+            <td style="padding: 10px; border: 1px solid #ddd;">${product.title || "N/A"}</td>
+          </tr>
+          <tr>
+            <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">Price</td>
+            <td style="padding: 10px; border: 1px solid #ddd;">$${product.price || "0.00"}</td>
+          </tr>
+          <tr>
+            <td style="padding: 10px; border: 1px solid #ddd; font-weight: bold;">SKU</td>
+            <td style="padding: 10px; border: 1px solid #ddd;">${product.sku || "Not Available"}</td>
+          </tr>
+        </table>
+
+        <p style="margin-top: 20px; font-size: 14px; color: #777; text-align: center;">
+          Customer Email: <strong>${email}</strong>
+        </p>
+      </div>
     `;
 
     // ✅ Zapier Webhook
@@ -60,15 +67,11 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         email,
         subject: `Order Interest: ${product.title || "Unknown Product"}`,
-        body_html: `
-          <div style="font-family:Arial,sans-serif; line-height:1.5;">
-            <h1 style="color:#444;">New Product Interest</h1>
-            <p><strong>Email:</strong> ${email}</p>
-            ${productHTML}
-          </div>
-        `,
-        // fallback plain text
-        body_text: `New interest from ${email}\nProduct: ${product.title}\nPrice: $${product.price}\nQuantity: ${product.quantity}`
+        body_html: productHTML,
+        body_text: `New interest from ${email}
+Product: ${product.title}
+Price: $${product.price}
+SKU: ${product.sku}`
       })
     });
 
