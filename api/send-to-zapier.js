@@ -49,7 +49,7 @@ export default async function handler(req, res) {
         email,
         subject: `Order Interest: ${product.title || "Unknown Product"}`,
         body_html: productHTML,
-        body_text: `New interest from ${email}
+        body_text: `Email: ${email}
 Product Image: ${product.image}
 Product Title: ${product.title}
 Price: $${product.price}
