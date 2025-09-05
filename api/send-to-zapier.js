@@ -19,7 +19,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Missing required fields (email, product)" });
     }
 
-    // ✅ Styled product HTML design
+    // ✅ Styled HTML for email body
     const productHTML = `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border: 1px solid #eee; border-radius: 8px;">
         <h1 style="color: #2c3e50; text-align: center;">🛍️ New Product Interest</h1>
@@ -71,7 +71,9 @@ export default async function handler(req, res) {
         body_text: `New interest from ${email}
 Product: ${product.title}
 Price: $${product.price}
-SKU: ${product.sku}`
+SKU: ${product.sku}`,
+        // 👇 Attachments (Zapier will try to download these files)
+        attachments: product.image ? [product.image] : []
       })
     });
 
