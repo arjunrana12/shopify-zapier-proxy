@@ -13,27 +13,32 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Missing required fields (email, product)" });
     }
 
-    // Create a single "attachment" variable
+    // Create a single field with all product details
     const attachment = `
-📦 *Product Details*
+📦 Product Details
 
-📝 Title: ${product.title}
-💰 Price: ${product.price}
-🔖 SKU: ${product.sku}
-🖼️ Image: ${product.image}
-🔗 URL: ${product.url}
+📝 Title: ${product.title || "N/A"}
+💰 Price: ${product.price || "N/A"}
+🔖 SKU: ${product.sku || "N/A"}
+🖼️ Image: ${product.image || "N/A"}
+🔗 URL: ${product.url || "N/A"}
 
 👤 Sender: ${sender || "N/A"}
 ✉️ Recipient: ${email}
 💬 Message: ${message || "No message provided"}
     `.trim();
 
-    // Payload for Zapier
+    // Send both individual fields + the combined one
     const payload = {
       email,
       sender: sender || "",
       message: message || "",
-      attachment, // ✅ All product details in one field
+      product_title: product.title || "",
+      product_price: product.price || "",
+      product_sku: product.sku || "",
+      product_image: product.image || "",
+      product_url: product.url || "",
+      attachment, // ✅ one big block
     };
 
     const zapierWebhookURL =
@@ -49,12 +54,12 @@ export default async function handler(req, res) {
     if (!z.ok) {
       const t = await z.text();
       console.error("❌ Zapier error:", t);
-      return res.status(502).json({ error: "Zapier forwarding failed" });
+      return res.status(502).json({ error: "Zapier forwarding failed", details: t });
     }
 
-    return res.status(200).json({ message: "✅ Email sent successfully" });
+    return res.status(200).json({ message: "✅ Email sent successfully", sent: payload });
   } catch (err) {
     console.error("❌ Server error:", err);
-    return res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).json({ error: "Internal Server Error", details: err.message });
   }
 }
