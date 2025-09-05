@@ -13,27 +13,37 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Missing required fields (email, product)" });
     }
 
-    // Create a single "attachment" variable
-    const attachment = `
-📦 *Product Details*
+    // 🛠️ Flatten product into structured fields
+    const productDetails = {
+      title: product.title || "N/A",
+      price: product.price || "N/A",
+      sku: product.sku || "N/A",
+      image: product.image || "N/A",
+      url: product.url || "N/A",
+    };
 
-📝 Title: ${product.title}
-💰 Price: ${product.price}
-🔖 SKU: ${product.sku}
-🖼️ Image: ${product.image}
-🔗 URL: ${product.url}
+    // 📝 Create a formatted text block (for Slack/Email body)
+    const attachment = `
+📦 Product Details
+---------------------
+📝 Title: ${productDetails.title}
+💰 Price: ${productDetails.price}
+🔖 SKU: ${productDetails.sku}
+🖼️ Image: ${productDetails.image}
+🔗 URL: ${productDetails.url}
 
 👤 Sender: ${sender || "N/A"}
 ✉️ Recipient: ${email}
 💬 Message: ${message || "No message provided"}
     `.trim();
 
-    // Payload for Zapier
+    // 🚀 Final payload to Zapier
     const payload = {
       email,
       sender: sender || "",
       message: message || "",
-      attachment, // ✅ All product details in one field
+      ...productDetails,   // keeps individual fields available
+      attachment           // full block of text in one variable
     };
 
     const zapierWebhookURL =
@@ -49,12 +59,12 @@ export default async function handler(req, res) {
     if (!z.ok) {
       const t = await z.text();
       console.error("❌ Zapier error:", t);
-      return res.status(502).json({ error: "Zapier forwarding failed" });
+      return res.status(502).json({ error: "Zapier forwarding failed", details: t });
     }
 
-    return res.status(200).json({ message: "✅ Email sent successfully" });
+    return res.status(200).json({ message: "✅ Email sent successfully", sent: payload });
   } catch (err) {
     console.error("❌ Server error:", err);
-    return res.status(500).json({ error: "Internal Server Error" });
+    return res.status(500).json({ error: "Internal Server Error", details: err.message });
   }
 }
