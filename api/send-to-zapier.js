@@ -50,10 +50,10 @@ export default async function handler(req, res) {
         subject: `Order Interest: ${product.title || "Unknown Product"}`,
         body_html: productHTML,
         body_text: `New interest from ${email}
-        Product Image: ${product.image}
-        Product Title: ${product.title}
-        Price: $${product.price}
-        SKU: ${product.sku}`
+Product Image: ${product.image}
+Product Title: ${product.title}
+Price: $${product.price}
+SKU: ${product.sku}`
       })
     });
 
