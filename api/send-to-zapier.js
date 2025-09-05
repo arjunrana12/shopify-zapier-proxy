@@ -13,16 +13,27 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: "Missing required fields (email, product)" });
     }
 
-    // flatten product
+    // Create a single "attachment" variable
+    const attachment = `
+📦 *Product Details*
+
+📝 Title: ${product.title}
+💰 Price: ${product.price}
+🔖 SKU: ${product.sku}
+🖼️ Image: ${product.image}
+🔗 URL: ${product.url}
+
+👤 Sender: ${sender || "N/A"}
+✉️ Recipient: ${email}
+💬 Message: ${message || "No message provided"}
+    `.trim();
+
+    // Payload for Zapier
     const payload = {
       email,
       sender: sender || "",
       message: message || "",
-      product_title: product.title,
-      product_price: product.price,
-      product_sku: product.sku,
-      product_image: product.image,
-      product_url: product.url,
+      attachment, // ✅ All product details in one field
     };
 
     const zapierWebhookURL =
